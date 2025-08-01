@@ -1,0 +1,14 @@
+# Configuration simple pour KoboCollect Data Viewer
+
+# Désactiver l'affichage du contenu des répertoires
+Options -Indexes
+
+# Permettre l'accès aux fichiers PHP
+<Files "*.php">
+    Require all granted
+</Files>
+
+# Protection basique des fichiers de configuration
+<Files "kobocollect.php">
+    Require all denied
+</Files> 

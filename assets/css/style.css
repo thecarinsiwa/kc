@@ -1,0 +1,182 @@
+/* Styles personnalisés pour KoboCollect Data Viewer */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.table td {
+    vertical-align: middle;
+    border-top: 1px solid #dee2e6;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Styles pour les badges */
+.badge {
+    font-size: 0.75em;
+    padding: 0.375em 0.75em;
+}
+
+/* Styles pour les éléments de code */
+pre {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    font-size: 0.875em;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+code {
+    color: #e83e8c;
+    background-color: #f8f9fa;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.125rem;
+}
+
+/* Styles pour les éléments de recherche */
+.input-group-text {
+    background-color: #f8f9fa;
+    border-color: #ced4da;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Styles pour les boutons */
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Styles pour les spinners */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Styles pour les messages d'erreur */
+.alert-danger {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+/* Styles pour les éléments vides */
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .input-group {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Styles pour les tooltips */
+[title] {
+    cursor: help;
+}
+
+/* Styles pour les éléments de pagination */
+.pagination {
+    margin-bottom: 0;
+}
+
+/* Styles pour les éléments de tri */
+.table th {
+    cursor: pointer;
+    user-select: none;
+}
+
+.table th:hover {
+    background-color: #e9ecef;
+}
+
+/* Styles pour les éléments de filtrage */
+.filter-badge {
+    display: inline-block;
+    margin: 0.125rem;
+    padding: 0.25rem 0.5rem;
+    background-color: #e9ecef;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+}
+
+/* Styles pour les éléments de statistiques */
+.stats-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stats-number {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stats-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+} 
