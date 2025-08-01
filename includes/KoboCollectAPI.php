@@ -248,34 +248,87 @@ class KoboCollectAPI {
         if (empty($searchTerm) || !isset($data['results'])) {
             return $data;
         }
-        
+
         $searchTerm = strtolower($searchTerm);
         $filteredResults = [];
-        
+
         foreach ($data['results'] as $result) {
             $found = false;
-            
+
             foreach ($this->config['searchable_fields'] as $field) {
                 if (isset($result[$field])) {
-                    $fieldValue = is_array($result[$field]) ? 
-                        json_encode($result[$field]) : 
+                    $fieldValue = is_array($result[$field]) ?
+                        json_encode($result[$field]) :
                         strval($result[$field]);
-                    
+
                     if (stripos($fieldValue, $searchTerm) !== false) {
                         $found = true;
                         break;
                     }
                 }
             }
-            
+
             if ($found) {
                 $filteredResults[] = $result;
             }
         }
-        
+
         $data['results'] = $filteredResults;
         return $data;
     }
+
+    /**
+     * Télécharge une image depuis KoboToolbox avec authentification
+     */
+    public function downloadImage($imageUrl) {
+        $ch = curl_init();
+
+        $options = [
+            CURLOPT_URL => $imageUrl,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => $this->config['api_settings']['timeout'],
+            CURLOPT_SSL_VERIFYPEER => $this->config['api_settings']['verify_ssl'],
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_HEADER => false,
+            CURLOPT_NOBODY => false
+        ];
+
+        // Ajouter l'authentification
+        if (!empty($this->config['auth_token'])) {
+            // Authentification par token
+            $options[CURLOPT_HTTPHEADER] = ['Authorization: Token ' . $this->config['auth_token']];
+        } elseif (!empty($this->config['username']) && !empty($this->config['password'])) {
+            // Authentification par nom d'utilisateur/mot de passe
+            $options[CURLOPT_USERPWD] = $this->config['username'] . ':' . $this->config['password'];
+        }
+
+        curl_setopt_array($ch, $options);
+
+        $imageData = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        $error = curl_error($ch);
+
+        curl_close($ch);
+
+        if ($error) {
+            error_log("Erreur cURL lors du téléchargement de l'image: " . $error);
+            return false;
+        }
+
+        if ($httpCode !== 200) {
+            error_log("Erreur HTTP lors du téléchargement de l'image: " . $httpCode . " - URL: " . $imageUrl);
+            return false;
+        }
+
+        return [
+            'data' => $imageData,
+            'content_type' => $contentType,
+            'size' => strlen($imageData)
+        ];
+    }
+
 }
 
 ?>

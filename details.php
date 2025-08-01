@@ -107,78 +107,105 @@ if (isset($data['error'])) {
                     </div>
                 </div>
 
-                <!-- Section Image de la pièce d'identité -->
-                <?php 
-                $imagePieceIdentite = $record['Image_piece_identite'] ?? null;
+                <!-- Section Images attachées -->
+                <?php
                 $attachments = $record['_attachments'] ?? [];
-                $imageAttachment = null;
-                
-                if ($imagePieceIdentite && !empty($attachments)) {
+                $imageAttachments = [];
+
+                // Filtrer les attachments pour ne garder que les images
+                if (!empty($attachments)) {
                     foreach ($attachments as $attachment) {
-                        if (isset($attachment['question_xpath']) && $attachment['question_xpath'] === 'Image_piece_identite') {
-                            $imageAttachment = $attachment;
-                            break;
+                        if (isset($attachment['mimetype']) && strpos($attachment['mimetype'], 'image/') === 0) {
+                            $imageAttachments[] = $attachment;
                         }
                     }
                 }
                 ?>
-                
-                <?php if ($imageAttachment): ?>
+
+                <?php if (!empty($imageAttachments)): ?>
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header bg-info text-white">
                                 <h5 class="mb-0">
-                                    <i class="fas fa-id-card me-2"></i>
-                                    Image de la pièce d'identité
+                                    <i class="fas fa-images me-2"></i>
+                                    Images attachées (<?php echo count($imageAttachments); ?>)
                                 </h5>
                             </div>
-                            <div class="card-body text-center">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <h6 class="text-muted mb-3">Vue réduite</h6>
-                                        <img src="<?php echo str_replace('?format=json', '', $imageAttachment['download_small_url'] ?? ''); ?>" 
-                                             class="img-fluid rounded border shadow-sm" 
-                                             style="max-height: 250px;"
-                                             alt="Pièce d'identité - Vue réduite"
-                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <div class="alert alert-warning" style="display: none;">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                            Image non accessible
+                            <div class="card-body">
+                                <?php foreach ($imageAttachments as $index => $imageAttachment): ?>
+                                    <div class="mb-4 <?php echo $index > 0 ? 'border-top pt-4' : ''; ?>">
+                                        <h6 class="text-primary mb-3">
+                                            <i class="fas fa-image me-2"></i>
+                                            <?php
+                                            $questionName = $imageAttachment['question_xpath'] ?? 'Image';
+                                            $displayName = $questionName === 'Image_piece_identite' ? 'Pièce d\'identité' : $questionName;
+                                            echo htmlspecialchars($displayName);
+                                            ?>
+                                        </h6>
+                                        <div class="text-center">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h6 class="text-muted mb-3">Vue réduite</h6>
+                                                    <?php
+                                                    $smallUrl = str_replace('?format=json', '', $imageAttachment['download_small_url'] ?? '');
+                                                    $proxySmallUrl = 'image_proxy.php?url=' . urlencode($smallUrl);
+                                                    ?>
+                                                    <img src="<?php echo $proxySmallUrl; ?>"
+                                                         class="img-fluid rounded border shadow-sm"
+                                                         style="max-height: 250px;"
+                                                         alt="<?php echo htmlspecialchars($displayName); ?> - Vue réduite"
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                                    <div class="alert alert-warning" style="display: none;">
+                                                        <i class="fas fa-exclamation-triangle"></i>
+                                                        Image non accessible
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h6 class="text-muted mb-3">Vue moyenne</h6>
+                                                    <?php
+                                                    $mediumUrl = str_replace('?format=json', '', $imageAttachment['download_medium_url'] ?? '');
+                                                    $proxyMediumUrl = 'image_proxy.php?url=' . urlencode($mediumUrl);
+                                                    ?>
+                                                    <img src="<?php echo $proxyMediumUrl; ?>"
+                                                         class="img-fluid rounded border shadow-sm"
+                                                         style="max-height: 250px;"
+                                                         alt="<?php echo htmlspecialchars($displayName); ?> - Vue moyenne"
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                                    <div class="alert alert-warning" style="display: none;">
+                                                        <i class="fas fa-exclamation-triangle"></i>
+                                                        Image non accessible
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-4">
+                                                <?php
+                                                $largeUrl = str_replace('?format=json', '', $imageAttachment['download_large_url'] ?? '');
+                                                $proxyLargeUrl = 'image_proxy.php?url=' . urlencode($largeUrl);
+                                                ?>
+                                                <a href="<?php echo $proxyLargeUrl; ?>"
+                                                   target="_blank"
+                                                   class="btn btn-outline-primary">
+                                                    <i class="fas fa-external-link-alt me-1"></i>
+                                                    Voir en grand format
+                                                </a>
+                                                <a href="download_image.php?url=<?php echo urlencode($largeUrl); ?>&filename=<?php echo urlencode($imageAttachment['media_file_basename'] ?? 'image.jpg'); ?>"
+                                                   class="btn btn-outline-secondary ms-2"
+                                                   download>
+                                                    <i class="fas fa-download me-1"></i>
+                                                    Télécharger
+                                                </a>
+                                            </div>
+                                            <div class="mt-3">
+                                                <small class="text-muted">
+                                                    <strong>Nom du fichier:</strong> <?php echo htmlspecialchars($imageAttachment['media_file_basename'] ?? 'N/A'); ?><br>
+                                                    <strong>Type:</strong> <?php echo htmlspecialchars($imageAttachment['mimetype'] ?? 'N/A'); ?><br>
+                                                    <strong>Taille:</strong> <?php echo isset($imageAttachment['file_size']) ? number_format($imageAttachment['file_size'] / 1024, 1) . ' KB' : 'N/A'; ?>
+                                                </small>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <h6 class="text-muted mb-3">Vue moyenne</h6>
-                                        <img src="<?php echo str_replace('?format=json', '', $imageAttachment['download_medium_url'] ?? ''); ?>" 
-                                             class="img-fluid rounded border shadow-sm" 
-                                             style="max-height: 250px;"
-                                             alt="Pièce d'identité - Vue moyenne"
-                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <div class="alert alert-warning" style="display: none;">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                            Image non accessible
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mt-4">
-                                    <a href="<?php echo str_replace('?format=json', '', $imageAttachment['download_large_url'] ?? ''); ?>" 
-                                       target="_blank" 
-                                       class="btn btn-outline-primary">
-                                        <i class="fas fa-external-link-alt me-1"></i>
-                                        Voir l'image en grand format
-                                    </a>
-                                    <button class="btn btn-outline-secondary ms-2" 
-                                            onclick="downloadImage('<?php echo str_replace('?format=json', '', $imageAttachment['download_large_url'] ?? ''); ?>', '<?php echo htmlspecialchars($imageAttachment['media_file_basename'] ?? 'image.jpg'); ?>')">
-                                        <i class="fas fa-download me-1"></i>
-                                        Télécharger l'image
-                                    </button>
-                                </div>
-                                <div class="mt-3">
-                                    <small class="text-muted">
-                                        <strong>Nom du fichier:</strong> <?php echo htmlspecialchars($imageAttachment['media_file_basename'] ?? 'N/A'); ?><br>
-                                        <strong>Type:</strong> <?php echo htmlspecialchars($imageAttachment['mimetype'] ?? 'N/A'); ?>
-                                    </small>
-                                </div>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                     </div>
@@ -336,32 +363,7 @@ if (isset($data['error'])) {
             link.click();
             document.body.removeChild(link);
         }
-        
-        // Fonction pour télécharger une image
-        function downloadImage(imageUrl, filename) {
-            fetch(imageUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erreur lors du téléchargement');
-                    }
-                    return response.blob();
-                })
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = filename || 'image.jpg';
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                })
-                .catch(error => {
-                    console.error('Erreur:', error);
-                    alert('Erreur lors du téléchargement de l\'image');
-                });
-        }
+
     </script>
 </body>
 </html> 
