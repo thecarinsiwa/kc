@@ -58,6 +58,10 @@ if (isset($data['error'])) {
                 KoboCollect Data Viewer
             </a>
             <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="test_certificate.php">
+                    <i class="fas fa-vial me-1"></i>
+                    Test Certificats
+                </a>
                 <a class="nav-link" href="index.php">
                     <i class="fas fa-arrow-left me-1"></i>
                     Retour à la liste
@@ -96,10 +100,26 @@ if (isset($data['error'])) {
                                         </h5>
                                     </div>
                                     <div class="col-md-4 text-end">
-                                        <span class="badge bg-secondary fs-6">
-                                            <i class="fas fa-hashtag me-1"></i>
-                                            ID: <?php echo htmlspecialchars($record['_id'] ?? 'N/A'); ?>
-                                        </span>
+                                        <div class="mb-2">
+                                            <span class="badge bg-secondary fs-6">
+                                                <i class="fas fa-hashtag me-1"></i>
+                                                ID: <?php echo htmlspecialchars($record['_id'] ?? 'N/A'); ?>
+                                            </span>
+                                        </div>
+                                        <div class="btn-group" role="group">
+                                            <a href="generate_certificate.php?id=<?php echo urlencode($record['_id']); ?>"
+                                               class="btn btn-success btn-sm"
+                                               title="Générer certificat PDF (nécessite TCPDF)">
+                                                <i class="fas fa-certificate me-1"></i>
+                                                Certificat PDF
+                                            </a>
+                                            <a href="generate_certificate_simple.php?id=<?php echo urlencode($record['_id']); ?>"
+                                               class="btn btn-outline-success btn-sm"
+                                               title="Générer certificat image (simple)">
+                                                <i class="fas fa-image me-1"></i>
+                                                Certificat IMG
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

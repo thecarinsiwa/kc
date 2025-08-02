@@ -5,11 +5,12 @@
 class KoboCollectViewer {
     constructor() {
         this.currentData = [];
+        this.allData = []; // Stocker toutes les données pour la génération de certificats
         this.currentHeaders = [];
         this.currentPage = 1;
         this.pageSize = 10;
         this.searchTerm = '';
-        
+
         this.init();
     }
     
@@ -67,6 +68,31 @@ class KoboCollectViewer {
             this.showError('Erreur de connexion au serveur');
             console.error('Erreur:', error);
         }
+
+        // Charger toutes les données pour la génération de certificats (en arrière-plan)
+        this.loadAllData();
+    }
+
+    async loadAllData() {
+        try {
+            // Charger toutes les données sans pagination pour les certificats
+            const params = new URLSearchParams({
+                limit: 10000, // Limite élevée pour récupérer toutes les données
+                offset: 0
+            });
+
+            const response = await fetch(`api/get_data.php?${params}`);
+            const result = await response.json();
+
+            if (result.success) {
+                this.allData = result.data;
+                console.log(`Toutes les données chargées: ${this.allData.length} enregistrements`);
+            } else {
+                console.warn('Impossible de charger toutes les données pour les certificats');
+            }
+        } catch (error) {
+            console.warn('Erreur lors du chargement de toutes les données:', error);
+        }
     }
     
     displayData() {
@@ -112,17 +138,32 @@ class KoboCollectViewer {
                 const formattedValue = this.formatCellValue(value);
                 rowsHTML += `<td>${formattedValue}</td>`;
             });
-            // Ajouter le bouton détails avec lien vers details.php
+            // Ajouter les boutons d'action avec lien vers details.php
             const recordId = record['_id'];
             if (recordId) {
                 rowsHTML += `
                     <td class="text-center">
-                        <a href="details.php?id=${recordId}" class="btn btn-sm btn-outline-info" title="Voir les détails">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                        <button class="btn btn-sm btn-outline-secondary ms-1" onclick="window.koboViewer.showDetails(${index})" title="Voir les détails (modal)">
-                            <i class="fas fa-expand"></i>
-                        </button>
+                        <div class="btn-group" role="group">
+                            <a href="details.php?id=${recordId}" class="btn btn-sm btn-outline-info" title="Voir les détails">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="window.koboViewer.showDetails(${index})" title="Voir les détails (modal)">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" title="Générer certificat">
+                                    <i class="fas fa-certificate"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="generate_certificate.php?id=${recordId}">
+                                        <i class="fas fa-file-pdf me-2"></i>Certificat PDF
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="generate_certificate_simple.php?id=${recordId}">
+                                        <i class="fas fa-image me-2"></i>Certificat Image
+                                    </a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </td>
                 `;
             } else {
@@ -658,7 +699,112 @@ function downloadImage(imageUrl, filename) {
         });
 }
 
+// Fonction globale pour générer tous les certificats
+function generateAllCertificates() {
+    if (!window.koboViewer || !window.koboViewer.allData || window.koboViewer.allData.length === 0) {
+        alert('Aucune donnée disponible pour générer les certificats');
+        return;
+    }
+
+    const totalRecords = window.koboViewer.allData.length;
+    const confirmMessage = `Voulez-vous générer ${totalRecords} certificats ?\n\nCela peut prendre quelques minutes selon le nombre de participants.`;
+
+    if (confirm(confirmMessage)) {
+        // Afficher un indicateur de chargement
+        showCertificateProgress('Génération de tous les certificats en cours...', totalRecords);
+
+        // Construire l'URL avec tous les paramètres
+        const url = `generate_all_certificates.php?limit=${totalRecords}`;
+
+        // Ouvrir dans une nouvelle fenêtre pour téléchargement
+        window.open(url, '_blank');
+
+        // Masquer l'indicateur après un délai
+        setTimeout(() => {
+            hideCertificateProgress();
+        }, 3000);
+    }
+}
+
+// Fonction globale pour générer les certificats filtrés
+function generateFilteredCertificates() {
+    if (!window.koboViewer || !window.koboViewer.currentData || window.koboViewer.currentData.length === 0) {
+        alert('Aucune donnée filtrée disponible pour générer les certificats');
+        return;
+    }
+
+    const totalRecords = window.koboViewer.currentData.length;
+    const searchTerm = document.getElementById('searchInput').value;
+
+    let confirmMessage = `Voulez-vous générer ${totalRecords} certificats`;
+    if (searchTerm) {
+        confirmMessage += ` pour la recherche "${searchTerm}"`;
+    }
+    confirmMessage += ' ?\n\nCela peut prendre quelques minutes selon le nombre de participants.';
+
+    if (confirm(confirmMessage)) {
+        // Afficher un indicateur de chargement
+        showCertificateProgress('Génération des certificats filtrés en cours...', totalRecords);
+
+        // Construire l'URL avec les paramètres de filtrage
+        let url = `generate_all_certificates.php?limit=${totalRecords}`;
+        if (searchTerm) {
+            url += `&search=${encodeURIComponent(searchTerm)}`;
+        }
+
+        // Ouvrir dans une nouvelle fenêtre pour téléchargement
+        window.open(url, '_blank');
+
+        // Masquer l'indicateur après un délai
+        setTimeout(() => {
+            hideCertificateProgress();
+        }, 3000);
+    }
+}
+
+// Fonction pour afficher l'indicateur de progression
+function showCertificateProgress(message, totalRecords) {
+    // Créer ou mettre à jour l'indicateur de progression
+    let progressDiv = document.getElementById('certificateProgress');
+    if (!progressDiv) {
+        progressDiv = document.createElement('div');
+        progressDiv.id = 'certificateProgress';
+        progressDiv.className = 'alert alert-info position-fixed';
+        progressDiv.style.cssText = `
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        `;
+        document.body.appendChild(progressDiv);
+    }
+
+    progressDiv.innerHTML = `
+        <div class="d-flex align-items-center">
+            <div class="spinner-border spinner-border-sm me-3" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+            <div>
+                <strong>Génération de certificats</strong><br>
+                <small>${message}<br>
+                ${totalRecords} participant(s) à traiter</small>
+            </div>
+        </div>
+    `;
+
+    progressDiv.style.display = 'block';
+}
+
+// Fonction pour masquer l'indicateur de progression
+function hideCertificateProgress() {
+    const progressDiv = document.getElementById('certificateProgress');
+    if (progressDiv) {
+        progressDiv.style.display = 'none';
+    }
+}
+
 // Initialiser l'application quand le DOM est chargé
 document.addEventListener('DOMContentLoaded', function() {
     window.koboViewer = new KoboCollectViewer();
-}); 
+});

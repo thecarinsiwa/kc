@@ -55,6 +55,27 @@
                                         <i class="fas fa-download me-1"></i>
                                         Exporter
                                     </button>
+                                    <div class="btn-group ms-2" role="group">
+                                        <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-certificate me-1"></i>
+                                            Certificats
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" onclick="generateAllCertificates()">
+                                                <i class="fas fa-file-pdf me-2"></i>Tous les certificats PDF
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="generateFilteredCertificates()">
+                                                <i class="fas fa-filter me-2"></i>Certificats filtrés
+                                            </a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item" href="test_certificate.php">
+                                                <i class="fas fa-vial me-2"></i>Tester les certificats
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="help_batch_certificates.php">
+                                                <i class="fas fa-question-circle me-2"></i>Aide et guide
+                                            </a></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                             

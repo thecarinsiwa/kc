@@ -9,11 +9,16 @@ class KoboCollectAPI {
     private $headers;
     
     public function __construct($config) {
+        // Vérifier que la configuration est valide
+        if (!is_array($config)) {
+            throw new Exception('Configuration invalide : doit être un tableau');
+        }
+
         $this->config = $config;
-        $this->baseUrl = rtrim($config['server_url'], '/');
+        $this->baseUrl = rtrim($config['server_url'] ?? '', '/');
         $this->headers = [
             'Content-Type: application/json',
-            'User-Agent: ' . $config['api_settings']['user_agent']
+            'User-Agent: ' . ($config['api_settings']['user_agent'] ?? 'KoboCollect-PHP-Client/1.0')
         ];
     }
     
@@ -286,8 +291,8 @@ class KoboCollectAPI {
         $options = [
             CURLOPT_URL => $imageUrl,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => $this->config['api_settings']['timeout'],
-            CURLOPT_SSL_VERIFYPEER => $this->config['api_settings']['verify_ssl'],
+            CURLOPT_TIMEOUT => $this->config['api_settings']['timeout'] ?? 30,
+            CURLOPT_SSL_VERIFYPEER => $this->config['api_settings']['verify_ssl'] ?? true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
             CURLOPT_HEADER => false,
