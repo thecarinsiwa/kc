@@ -1,51 +1,187 @@
 /* Styles personnalisés pour KoboCollect Data Viewer */
 
 body {
-    background-color: #f8f9fa;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
 }
 
 .navbar-brand {
-    font-weight: 600;
-    font-size: 1.2rem;
+    font-weight: 700;
+    font-size: 1.3rem;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .card {
     border: none;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    border-radius: 0.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 1rem;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
 .card-header {
-    background-color: #fff;
-    border-bottom: 1px solid #dee2e6;
-    border-radius: 0.5rem 0.5rem 0 0 !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-bottom: none;
+    border-radius: 1rem 1rem 0 0 !important;
+    padding: 1.5rem;
 }
 
+/* Styles améliorés pour le tableau */
 .table {
     margin-bottom: 0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.table-dark {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
 }
 
 .table th {
-    border-top: none;
-    font-weight: 600;
-    color: #495057;
-    background-color: #f8f9fa;
+    border: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem 0.75rem;
+    position: relative;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+}
+
+.table th:first-child {
+    border-radius: 0.75rem 0 0 0;
+}
+
+.table th:last-child {
+    border-radius: 0 0.75rem 0 0;
+}
+
+.table th::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
 }
 
 .table td {
     vertical-align: middle;
-    border-top: 1px solid #dee2e6;
+    border: none;
+    padding: 1rem 0.75rem;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
 }
 
 .table tbody tr:hover {
-    background-color: rgba(0, 123, 255, 0.05);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    transform: scale(1.01);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Styles pour les badges */
+.table tbody tr:last-child td:first-child {
+    border-radius: 0 0 0 0.75rem;
+}
+
+.table tbody tr:last-child td:last-child {
+    border-radius: 0 0 0.75rem 0;
+}
+
+/* Styles améliorés pour les badges */
 .badge {
     font-size: 0.75em;
-    padding: 0.375em 0.75em;
+    padding: 0.5em 0.85em;
+    border-radius: 50px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.badge-primary {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+}
+
+.badge-success {
+    background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+}
+
+.badge-warning {
+    background: linear-gradient(45deg, #f093fb, #f5576c);
+}
+
+.badge-info {
+    background: linear-gradient(45deg, #4facfe, #00f2fe);
+}
+
+/* Styles pour les boutons d'action */
+.btn-group .btn {
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-group .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-outline-info {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+}
+
+.btn-outline-info:hover {
+    background: linear-gradient(45deg, #764ba2, #667eea);
+    color: white;
+}
+
+.btn-outline-secondary {
+    background: linear-gradient(45deg, #6c757d, #495057);
+    color: white;
+    border: none;
+}
+
+.btn-outline-success {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    color: white;
+    border: none;
+}
+
+.dropdown-toggle::after {
+    margin-left: 0.5em;
 }
 
 /* Styles pour les éléments de code */
@@ -66,15 +202,73 @@ code {
     border-radius: 0.125rem;
 }
 
-/* Styles pour les éléments de recherche */
+/* Styles améliorés pour les éléments de recherche */
+.input-group {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
 .input-group-text {
-    background-color: #f8f9fa;
-    border-color: #ced4da;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.form-control {
+    border: none;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
 }
 
 .form-control:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    background: white;
+}
+
+.form-control::placeholder {
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Styles pour la pagination */
+.pagination {
+    margin-bottom: 0;
+    justify-content: center;
+}
+
+.page-link {
+    border: none;
+    padding: 0.75rem 1rem;
+    margin: 0 0.125rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    color: #667eea;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.page-item.disabled .page-link {
+    opacity: 0.5;
+    background: rgba(255, 255, 255, 0.5);
 }
 
 /* Styles pour les boutons */
@@ -179,4 +373,190 @@ code {
 .stats-label {
     font-size: 0.875rem;
     opacity: 0.9;
-} 
+}
+
+/* ===== STYLES AMÉLIORÉS POUR LE DATATABLE ===== */
+
+/* Animation d'apparition pour les lignes du tableau */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.table tbody tr {
+    animation: fadeInUp 0.5s ease forwards;
+    opacity: 0;
+}
+
+.table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+.table tbody tr:nth-child(2) { animation-delay: 0.15s; }
+.table tbody tr:nth-child(3) { animation-delay: 0.2s; }
+.table tbody tr:nth-child(4) { animation-delay: 0.25s; }
+.table tbody tr:nth-child(5) { animation-delay: 0.3s; }
+.table tbody tr:nth-child(6) { animation-delay: 0.35s; }
+.table tbody tr:nth-child(7) { animation-delay: 0.4s; }
+.table tbody tr:nth-child(8) { animation-delay: 0.45s; }
+.table tbody tr:nth-child(9) { animation-delay: 0.5s; }
+.table tbody tr:nth-child(10) { animation-delay: 0.55s; }
+
+/* Styles pour les indicateurs de chargement améliorés */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #667eea;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.loading .spinner-border {
+    border-color: #667eea;
+    border-right-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+/* Styles pour les en-têtes de colonnes avec tri */
+.table th.sortable {
+    position: relative;
+    padding-right: 2rem;
+    transition: all 0.2s ease;
+}
+
+.table th.sortable:hover {
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    transform: translateY(-1px);
+}
+
+.table th.sortable::after {
+    content: '⇅';
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.5;
+    font-size: 0.8rem;
+}
+
+.table th.sortable.asc::after {
+    content: '↑';
+    opacity: 1;
+    color: #667eea;
+}
+
+.table th.sortable.desc::after {
+    content: '↓';
+    opacity: 1;
+    color: #667eea;
+}
+
+/* Styles pour les cellules avec données importantes */
+.table td.highlight {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Styles pour les badges de statut */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.active {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    color: white;
+}
+
+.status-badge.pending {
+    background: linear-gradient(45deg, #ffc107, #fd7e14);
+    color: white;
+}
+
+.status-badge.inactive {
+    background: linear-gradient(45deg, #6c757d, #495057);
+    color: white;
+}
+
+/* Styles pour les actions en lot */
+.bulk-actions {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #667eea;
+}
+
+/* Styles pour les filtres avancés */
+.advanced-filters {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.filter-group {
+    margin-bottom: 1rem;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+/* Styles pour les statistiques en temps réel */
+.live-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    flex: 1;
+    min-width: 200px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Données KoboCollect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
@@ -78,7 +79,27 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
+                            <!-- Statistiques en temps réel -->
+                            <div class="live-stats" id="liveStats" style="display: none;">
+                                <div class="stat-card">
+                                    <div class="stat-number" id="totalRecordsCount">0</div>
+                                    <div class="stat-label">Total Participants</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="filteredRecordsCount">0</div>
+                                    <div class="stat-label">Affichés</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="withPhotosCount">0</div>
+                                    <div class="stat-label">Avec Photos</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="completedTodayCount">0</div>
+                                    <div class="stat-label">Aujourd'hui</div>
+                                </div>
+                            </div>
+
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover table-sm" id="dataTable">
                                     <thead class="table-dark">

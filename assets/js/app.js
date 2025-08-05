@@ -10,6 +10,8 @@ class KoboCollectViewer {
         this.currentPage = 1;
         this.pageSize = 10;
         this.searchTerm = '';
+        this.sortColumn = null;
+        this.sortDirection = 'asc';
 
         this.init();
     }
@@ -100,28 +102,35 @@ class KoboCollectViewer {
             this.showNoData();
             return;
         }
-        
+
         this.generateHeaders();
         this.generateTableRows();
+        this.updateStatistics();
         this.showDataContainer();
     }
     
     generateHeaders() {
         const tableHeader = document.getElementById('tableHeader');
         if (!tableHeader) return;
-        
+
         // Générer les en-têtes à partir des données
         const firstRecord = this.currentData[0];
         this.currentHeaders = Object.keys(firstRecord);
-        
+
+        // Filtrer et réorganiser les colonnes importantes
+        const priorityColumns = ['A_1_Nom_de_l_entrepreneur', 'A_3_Prenom', 'B_1_Nom_de_l_entreprise', 'ville', 'Date_interview'];
+        const otherColumns = this.currentHeaders.filter(h => !priorityColumns.includes(h) && !h.startsWith('_'));
+        this.currentHeaders = [...priorityColumns.filter(h => this.currentHeaders.includes(h)), ...otherColumns];
+
         let headerHTML = '';
         this.currentHeaders.forEach(header => {
             const displayName = this.formatHeaderName(header);
-            headerHTML += `<th>${displayName}</th>`;
+            const isImportant = priorityColumns.includes(header);
+            headerHTML += `<th class="sortable ${isImportant ? 'highlight' : ''}" data-column="${header}" onclick="window.koboViewer.sortBy('${header}')">${displayName}</th>`;
         });
         // Ajouter l'en-tête pour la colonne Actions
         headerHTML += '<th class="text-center">Actions</th>';
-        
+
         tableHeader.innerHTML = headerHTML;
     }
     
@@ -135,8 +144,9 @@ class KoboCollectViewer {
             rowsHTML += '<tr>';
             this.currentHeaders.forEach(header => {
                 const value = record[header];
-                const formattedValue = this.formatCellValue(value);
-                rowsHTML += `<td>${formattedValue}</td>`;
+                const formattedValue = this.formatCellValue(value, header);
+                const isImportant = ['A_1_Nom_de_l_entrepreneur', 'A_3_Prenom', 'B_1_Nom_de_l_entreprise'].includes(header);
+                rowsHTML += `<td class="${isImportant ? 'highlight' : ''}">${formattedValue}</td>`;
             });
             // Ajouter les boutons d'action avec lien vers details.php
             const recordId = record['_id'];
@@ -226,48 +236,68 @@ class KoboCollectViewer {
             .trim();
     }
     
-    formatCellValue(value) {
+    formatCellValue(value, header = '') {
         if (value === null || value === undefined || value === '') {
             return '<span class="text-muted">-</span>';
         }
-        
+
         if (typeof value === 'boolean') {
-            return value ? 
-                '<span class="badge bg-success">Oui</span>' : 
+            return value ?
+                '<span class="badge bg-success">Oui</span>' :
                 '<span class="badge bg-secondary">Non</span>';
         }
-        
+
         if (typeof value === 'object') {
             return `<pre class="mb-0 small"><code>${JSON.stringify(value, null, 2)}</code></pre>`;
         }
-        
+
         const stringValue = String(value);
-        
+
+        // Traitement spécial pour certains champs
+        if (header === 'A_1_Nom_de_l_entrepreneur' || header === 'A_3_Prenom') {
+            return `<strong class="text-primary">${this.escapeHtml(stringValue)}</strong>`;
+        }
+
+        if (header === 'B_1_Nom_de_l_entreprise') {
+            return `<span class="badge badge-info">${this.escapeHtml(stringValue)}</span>`;
+        }
+
+        if (header === 'Date_interview') {
+            const date = new Date(stringValue);
+            if (!isNaN(date.getTime())) {
+                return `<span class="text-muted">${date.toLocaleDateString('fr-FR')}</span>`;
+            }
+        }
+
+        if (header === 'ville') {
+            return `<span class="badge badge-secondary">${this.escapeHtml(stringValue)}</span>`;
+        }
+
         // Traiter les emails
         if (stringValue.includes('@') && stringValue.includes('.')) {
             return `<a href="mailto:${stringValue}" class="text-primary">${stringValue}</a>`;
         }
-        
+
         // Traiter les téléphones
         if (stringValue.match(/^\d{9,}$/)) {
             return `<a href="tel:${stringValue}" class="text-primary">${stringValue}</a>`;
         }
-        
+
         // Traiter les URLs
         if (stringValue.startsWith('http')) {
             return `<a href="${stringValue}" target="_blank" class="text-primary">${stringValue}</a>`;
         }
-        
+
         // Traiter les textes longs
         if (stringValue.length > 100) {
             return `<span title="${this.escapeHtml(stringValue)}" class="text-truncate d-inline-block" style="max-width: 200px;">${this.escapeHtml(stringValue.substring(0, 100))}...</span>`;
         }
-        
+
         // Traiter les textes moyens
         if (stringValue.length > 50) {
             return `<span class="text-wrap">${this.escapeHtml(stringValue)}</span>`;
         }
-        
+
         return `<span>${this.escapeHtml(stringValue)}</span>`;
     }
     
@@ -602,6 +632,118 @@ class KoboCollectViewer {
     debounce(func, wait) {
         clearTimeout(this.debounceTimer);
         this.debounceTimer = setTimeout(func, wait);
+    }
+
+    updateStatistics() {
+        // Afficher les statistiques
+        const liveStats = document.getElementById('liveStats');
+        if (liveStats) {
+            liveStats.style.display = 'flex';
+        }
+
+        // Calculer les statistiques
+        const totalRecords = this.allData.length;
+        const filteredRecords = this.currentData.length;
+
+        // Compter les participants avec photos
+        let withPhotos = 0;
+        this.currentData.forEach(record => {
+            if (record['_attachments'] && record['_attachments'].length > 0) {
+                withPhotos++;
+            }
+        });
+
+        // Compter les participants d'aujourd'hui
+        const today = new Date().toISOString().split('T')[0];
+        let completedToday = 0;
+        this.allData.forEach(record => {
+            const dateInterview = record['Date_interview'];
+            if (dateInterview && dateInterview.startsWith(today)) {
+                completedToday++;
+            }
+        });
+
+        // Mettre à jour les compteurs avec animation
+        this.animateCounter('totalRecordsCount', totalRecords);
+        this.animateCounter('filteredRecordsCount', filteredRecords);
+        this.animateCounter('withPhotosCount', withPhotos);
+        this.animateCounter('completedTodayCount', completedToday);
+    }
+
+    animateCounter(elementId, targetValue) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        const startValue = parseInt(element.textContent) || 0;
+        const duration = 1000; // 1 seconde
+        const startTime = performance.now();
+
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Fonction d'easing
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            const currentValue = Math.round(startValue + (targetValue - startValue) * easeOutQuart);
+
+            element.textContent = currentValue;
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        };
+
+        requestAnimationFrame(animate);
+    }
+
+    sortBy(column) {
+        if (!this.currentData.length) return;
+
+        // Déterminer la direction du tri
+        if (this.sortColumn === column) {
+            this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            this.sortColumn = column;
+            this.sortDirection = 'asc';
+        }
+
+        // Trier les données
+        this.currentData.sort((a, b) => {
+            let valueA = a[column] || '';
+            let valueB = b[column] || '';
+
+            // Conversion pour les dates
+            if (column === 'Date_interview') {
+                valueA = new Date(valueA);
+                valueB = new Date(valueB);
+            } else {
+                valueA = String(valueA).toLowerCase();
+                valueB = String(valueB).toLowerCase();
+            }
+
+            if (valueA < valueB) return this.sortDirection === 'asc' ? -1 : 1;
+            if (valueA > valueB) return this.sortDirection === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        // Mettre à jour l'affichage
+        this.generateTableRows();
+        this.updateSortIndicators();
+    }
+
+    updateSortIndicators() {
+        // Supprimer tous les indicateurs de tri
+        document.querySelectorAll('.table th').forEach(th => {
+            th.classList.remove('asc', 'desc');
+        });
+
+        // Ajouter l'indicateur pour la colonne active
+        if (this.sortColumn) {
+            const activeHeader = document.querySelector(`[data-column="${this.sortColumn}"]`);
+            if (activeHeader) {
+                activeHeader.classList.add(this.sortDirection);
+            }
+        }
     }
 }
 
